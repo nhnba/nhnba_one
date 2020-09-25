@@ -7,6 +7,11 @@ from django.core.cache import cache
 
 from user.logics import send_vcode
 from user.models import User
+from user.models import Profile
+from user.forms import UserForm
+from user.forms import ProfileForm
+from libs.qn_cloud import gen_token
+from libs.qn_cloud import get_res_url
 
 
 def fetch_vcode(request):
@@ -43,19 +48,52 @@ def submit_vcode(request):
 
 def show_profile(request):
     '''查看个人资料'''
-    return JsonResponse()
+    uid = request.session['uid']
+    profile, _ = Profile.objects.get_or_create(id=uid)
+    return JsonResponse({'code': 0, 'data': profile.to_dict()})
 
 
 def update_profile(request):
     '''更新个人资料'''
-    return JsonResponse()
+    # 定义 form 对象
+    user_form = UserForm(request.POST)
+    profile_form = ProfileForm(request.POST)
+
+    # 检查验证数据
+    if user_form.is_valid() and profile_form.is_valid():
+        uid = request.session['uid']
+
+        # 对应的 SQL 语句: update user set ... where id=uid
+        User.objects.filter(id=uid).update(**user_form.cleaned_data)
+        Profile.objects.update_or_create(id=uid, defaults=profile_form.cleaned_data)
+        return JsonResponse({'code': 0, 'data': None})
+    else:
+        err = {}
+        err.update(user_form.errors)
+        err.update(profile_form.errors)
+        return JsonResponse({'code': 1003, 'data': err})
 
 
 def qn_token(request):
     '''获取七牛云 Token'''
-    return JsonResponse()
+    uid = request.session['uid']
+    filename = f'Avatar-{uid}'
+    token = gen_token(uid, filename)
+    return JsonResponse({
+        'code': 0,
+        'data': {
+            'token': token,
+            'key': filename,
+        }
+    })
 
 
 def qn_callback(request):
     '''七牛云回调接口'''
-    return JsonResponse()
+    uid = request.POST.get('uid')
+    key = request.POST.get('key')
+    avatar_url = get_res_url(key)
+    User.objects.filter(id=uid).update(avatar=avatar_url)
+    return JsonResponse({'code': 0, 'data': avatar_url})
+
+
