@@ -6,9 +6,11 @@ class AuthMiddleware(MiddlewareMixin):
     '''登录验证中间件'''
 
     white_list = [
+        '/',
         '/api/user/vcode/fetch',
         '/api/user/vcode/submit',
-        '/qiniu/callback'
+        '/qiniu/callback',
+
     ]
 
     def process_request(self, request):
