@@ -18,6 +18,7 @@ from django.urls import path
 
 from home import views
 from user import apis as user_api
+from social import apis as social_api
 
 
 urlpatterns = [
@@ -29,5 +30,14 @@ urlpatterns = [
     path('api/user/profile/update', user_api.update_profile),
     path('qiniu/token', user_api.qn_token),
     path('qiniu/callback', user_api.qn_callback),
+
+    # Social 模块接口
+    path('api/social/rcmd', social_api.rcmd_users),
+    path('api/social/like', social_api.like),
+    path('api/social/superlike', social_api.superlike),
+    path('api/social/dislike', social_api.dislike),
+    path('api/social/rewind', social_api.rewind),
+    path('api/social/fans', social_api.show_fans),
+    path('api/social/friends', social_api.show_friends),
 ]
 

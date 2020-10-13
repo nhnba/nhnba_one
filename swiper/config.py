@@ -21,3 +21,7 @@ QN_ACCESS_KEY = 'dwSaTakKQHyofIn3TnvZVVzOvczTuaupUCM9sx-e'
 QN_SECRET_KEY = 'ZNmqN_Wzpi-zyccejwdnPR2j94XeDOh76-PH1gf-'
 QN_CALLBACK_URL = 'http://192.144.186.212:9000/qiniu/callback'
 QN_CALLBACK_DOMAIN = '192.144.186.212'
+
+# 反悔功能相关配置
+REWIND_TIMES = 3         # 每日反悔次数
+REWIND_TIMEOUT = 5 * 60  # 反悔超时时间

@@ -38,7 +38,7 @@ def submit_vcode(request):
 
         return render_json(user.to_dict())
     else:
-        return render_json(data= '验证码错误',code=errors.PROFILE_ERR)
+        raise errors.VcodeErr('验证码错误')
 
 def show_profile(request):
     '''查看个人资料'''
@@ -65,7 +65,7 @@ def update_profile(request):
         err = {}
         err.update(user_form.errors)
         err.update(profile_form.errors)
-        return render_json(code=errors.PROFILE_ERR,data=err)
+        raise errors.ProfileErr(data=err)
 
 def qn_token(request):
     '''获取七牛云 Token'''

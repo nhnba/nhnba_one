@@ -71,7 +71,7 @@ def create_robots(n):
                     'gender': gender,
                     'birthday': date(year, month, day),
                     'location': random.choice([item[0] for item in User.LOCATIONS]),
-                    'avatar': f'http://192.144.186.212:9000/Avatar-{uid}'
+                    'avatar': f'http://disk.swiper.seamile.cn/Avatar-{uid}'
                 }
             )
             print(f'created: {user.id} {name} {gender}')
