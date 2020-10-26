@@ -2,6 +2,9 @@ from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
 from common import errors
 from libs.http import render_json
+import logging
+
+err_log = logging.getLogger('err')
 
 class AuthMiddleware(MiddlewareMixin):
     '''登录验证中间件'''
@@ -11,6 +14,7 @@ class AuthMiddleware(MiddlewareMixin):
         '/api/user/vcode/fetch',
         '/api/user/vcode/submit',
         '/qiniu/callback',
+        'api/social/rank'
     ]
 
     def process_request(self, request):
@@ -30,4 +34,5 @@ class LogicErrMiddleware(MiddlewareMixin):
 
     def process_exception(self, request, exception):
         if isinstance(exception, errors.LogicErr):
+            err_log.error(f'逻辑异常：{exception.code}:{exception.data}')
             return render_json(exception.data, exception.code)

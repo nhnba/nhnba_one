@@ -1,3 +1,5 @@
+import logging
+
 from libs.http import render_json
 from libs.cache import rds
 from user.logics import send_vcode
@@ -7,8 +9,9 @@ from libs.qn_cloud import gen_token, get_res_url
 from common import errors,keys
 
 from celery import Celery, platforms
-
 platforms.C_FORCE_ROOT = True  #加上这一行,celery才能运行起来
+
+inf_log = logging.getLogger('inf')
 
 def fetch_vcode(request):
     '''给用户发送验证码'''
@@ -29,9 +32,11 @@ def submit_vcode(request):
     # if vcode and vcode == cached_vcode:
         try:
             user = User.objects.get(phonenum=phonenum)  # 从数据库获取用户
+            inf_log.info(f'User Login:{user.id}/{user.phonenum}')
         except User.DoesNotExist:
             # 如果用户不存在，则执行注册流程
             user = User.objects.create(phonenum=phonenum, nickname=phonenum)
+            inf_log.info(f'User Register:{user.id}/{user.phonenum}')
 
         # 在 Session 中记录用户登录的状态
         request.session['uid'] = user.id
@@ -43,8 +48,16 @@ def submit_vcode(request):
 def show_profile(request):
     '''查看个人资料'''
     uid = request.session['uid']
-    profile,_ = Profile.objects.get_or_create(id=uid)
-    profile.to_dict()
+    key = keys.PROFILE_K % uid
+
+    profile = rds.get(key)
+    inf_log.debug(f'从缓存中获取数据: {profile}')
+
+    if profile is None:
+        profile, _ = Profile.objects.get_or_create(id=uid)
+        inf_log.debug(f'从数据库中获取数据: {profile}')
+        rds.set(key, profile)
+        inf_log.debug('将数据写入到缓存')
     return render_json(profile.to_dict())
 
 def update_profile(request):
@@ -59,6 +72,10 @@ def update_profile(request):
 
         User.objects.filter(id=uid).update(**user_form.cleaned_data)
         Profile.objects.update_or_create(id=uid,defaults=profile_form.cleaned_data)
+
+        #删除旧缓存
+        inf_log.debug('删除旧缓存')
+        rds.delete(keys.PROFILE_K % uid)
 
         return render_json()
     else:
