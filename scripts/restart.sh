@@ -1,14 +1,4 @@
-#!/bin/bash
-
-# 平滑重启 (不间断重启)
-
-# 0. 初始状态
-#     37898 主进程
-#     40001 工作进程 <- 0
-#     40002 工作进程 <- 0
-#     40003 工作进程 <- 0
-#     40004 工作进程 <- 0
-# 1. 执行 `kill -HUP 37898`
+ll -HUP 37898`
 # 2. 首先创建 一批新的工作进程
 #     50001 工作进程 <- 12
 #     50002 工作进程 <- 35
@@ -21,7 +11,7 @@
 
 echo '正在重启服务器'
 
-PROJECT_DIR='/opt/swiper'
+PROJECT_DIR='/root/one/nhnba_one/scripts'
 PID_FILE="$PROJECT_DIR/logs/gunicorn.pid"
 
 if [ -f $PID_FILE ]; then

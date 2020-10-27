@@ -1,7 +1,7 @@
 #!/bin/bash
 # 项目启动脚本
 
-PROJECT_DIR='/opt/swiper'
+PROJECT_DIR='/root/one/nhnba_one/scripts'
 
 cd $PROJECT_DIR
 source ./venv/bin/activate

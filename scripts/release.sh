@@ -4,7 +4,7 @@
 USER='seamile'
 HOST='121.36.230.33'
 LOCAL_DIR='./'  # 本地的项目根路径
-REMOTE_DIR='/opt/swiper'
+REMOTE_DIR='/root/one/nhnba_one/scripts'
 
 # 第 1 步：切换指定版本
 if [[ "$#" == "1" ]]; then
